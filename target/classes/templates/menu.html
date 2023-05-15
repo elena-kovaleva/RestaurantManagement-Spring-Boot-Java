@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Меню</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body>
+<div class="sidebar">
+    <a href="/staff">Работники</a>
+    <a href="/orders">Заказы</a>
+    <a href="/menu">Меню</a>
+    <a href="/login">Выйти</a>
+</div>
+
+<div class="main-content">
+    <h1>Меню</h1>
+    <table>
+        <tr>
+            <th>Id</th>
+            <th>Название блюда</th>
+            <th>Рецепт</th>
+            <th>Стоимость</th>
+            <th>Тип блюда</th>
+        </tr>
+        <tr th:each="dish : ${dishes}">
+            <td th:text="${dish.id}"></td>
+            <td th:text="${dish.name}"></td>
+            <td>Есть</td>
+            <td th:text="${dish.cost}"></td>
+            <td th:text="${dish.type.name}"></td>
+        </tr>
+    </table>
+</div>
+
+</body>
+</html>

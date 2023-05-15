@@ -1,0 +1,55 @@
+:root {
+    --main-bg-color: #333;
+    --main-text-color: white;
+    --secondary-bg-color: #555;
+    --light-text-color: #f2f2f2;
+    --main-font: Arial, sans-serif;
+    --transition-speed: 0.3s;
+}
+
+body {
+    background-color: bisque;
+    font-family: var(--main-font);
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    box-sizing: border-box;
+}
+
+h1, th {
+    text-align: center;
+    margin-bottom: 40px;
+    background-color: var(--main-bg-color);
+    color: var(--main-text-color);
+}
+
+.sidebar, .sidebar-right {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    width: 260px;
+    background-color: var(--main-bg-color);
+    color: var(--main-text-color);
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box;
+    transition: all var(--transition-speed);
+}
+
+button, .actions a {
+    display: inline-block;
+    width: 100%;
+    padding: 10px;
+    background-color: var(--main-bg-color);
+    color: var(--main-text-color);
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+}
+
+button:hover, .actions a:hover {
+    background-color: var(--secondary-bg-color);
+}
