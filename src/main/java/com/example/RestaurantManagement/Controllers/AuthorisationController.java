@@ -30,16 +30,16 @@ public class AuthorisationController {
             Staff staff = optionalStaff.get();
             if (staff.getPassword().equals(password) && staff.getDismissalFromWork() == null) {
                 switch (staff.getRole()) {
-                    case "waiter" -> {
+                    case "ОФИЦИАНТ" -> {
                         return "redirect:/waiterJob";
                     }
-                    case "admin" -> {
-                        return "redirect:/adminJob";
+                    case "АДМИНИСТРАТОР" -> {
+                        return "redirect:/staff";
                     }
-                    case "manager" -> {
+                    case "МЕНЕДЖЕР" -> {
                         return "redirect:/managerJob";
                     }
-                    case "kitchen" -> {
+                    case "ПОВАР" -> {
                         return "redirect:/kitchenJob";
                     }
                     default -> {
