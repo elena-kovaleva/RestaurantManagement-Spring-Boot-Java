@@ -5,13 +5,13 @@ body {
     margin: 0;
 }
 
-h1 {
+h1, h2 {
     text-align: center;
     margin-bottom: 40px;
 }
 
 form {
-    width: 300px;
+    width: 500px; /* Увеличиваем ширину формы */
     margin: 0 auto;
 }
 
@@ -24,19 +24,21 @@ label {
     margin-bottom: 5px;
 }
 
-input[type="text"], input[type="password"] {
+input[type="text"], input[type="password"], input[type="date"], select {
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
+    font-size: 16px; /* Увеличиваем размер шрифта */
 }
 
 button {
     width: 100%;
-    padding: 10px;
+    padding: 15px; /* Увеличиваем padding */
     background-color: #333;
     color: white;
     border: none;
     cursor: pointer;
+    font-size: 18px; /* Увеличиваем размер шрифта */
 }
 
 button:hover {
@@ -64,7 +66,7 @@ button:hover {
     margin-top: 40px;
 }
 
-.sidebar {
+#sidebar {
     background-color: #333;
     height: 100%;
     width: 200px;
@@ -75,7 +77,12 @@ button:hover {
     padding: 20px 0;
 }
 
-.sidebar a {
+#sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#sidebar ul li a {
     display: block;
     color: white;
     padding: 10px;
@@ -83,31 +90,11 @@ button:hover {
     margin: 5px 10px;
 }
 
-.sidebar a:hover {
+#sidebar ul li a:hover {
     background-color: #555;
 }
 
-.main-content {
+#content {
     margin-left: 220px;
     padding: 20px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-table, th, td {
-    border: 1px solid #ccc;
-    padding: 10px;
-    text-align: left;
-}
-
-table th {
-    background-color: #333;
-    color: white;
-}
-
-table tr:nth-child(even) {
-    background-color: #f2f2f2;
 }
