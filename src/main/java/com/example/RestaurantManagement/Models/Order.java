@@ -20,7 +20,7 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "table_id")
-    private RestaurantTable table;
+    private Tables table;
 
     @Column(name = "start_time")
     private Timestamp startTime;
@@ -55,11 +55,11 @@ public class Order {
         this.totalCost = totalCost;
     }
 
-    public RestaurantTable getTable() {
+    public Tables getTable() {
         return table;
     }
 
-    public void setTable(RestaurantTable table) {
+    public void setTable(Tables table) {
         this.table = table;
     }
 
