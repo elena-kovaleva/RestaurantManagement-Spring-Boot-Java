@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Назначение смен</title>
+    <link rel="stylesheet" th:href="@{/css/manager-styles.css}"/>
+</head>
+<body>
+<div id="content">
+    <h2>Назначение смен</h2>
+    <form action="#" th:action="@{/assign-shift}" method="post">
+        <label for="staff_id">Выберите сотрудника:</label>
+        <select id="staff_id" name="staff_id">
+            <option th:each="staff : ${staffs}" th:value="${staff.id}" th:text="${staff.name}"></option>
+        </select>
+        <label for="date">Выберите дату:</label>
+        <input type="date" id="date" name="date"/>
+        <button type="submit">Назначить</button>
+    </form>
+</div>
+</body>
+</html>
