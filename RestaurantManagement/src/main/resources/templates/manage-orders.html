@@ -5,41 +5,47 @@
     <link rel="stylesheet" th:href="@{/css/manager-styles.css}"/>
 </head>
 <body>
-<div id="sidebar">
+<div class="sidebar">
     <ul>
-        <li><a href="#">Бронирование столиков</a></li>
-        <li><a href="#">Назначение смен</a></li>
-        <li><a href="#">Работа с заказами</a></li>
+        <li><a href="/view-schedule">Расписание</a></li>
+        <li><a href="/assign-shifts">Назначение смен</a></li>
+        <li><a href="/book-table">Бронирование столиков</a></li>
+        <li><a href="/manage-orders">Работа с заказами</a></li>
+        <li><a href="/login">Выход</a></li>
     </ul>
 </div>
-<div id="content">
-    <table>
-        <thead>
-        <tr>
-            <th>Заказ</th>
-            <th>Блюдо</th>
-            <th>Статус</th>
-            <th>Изменить статус</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="orderedDish : ${orderedDishes}">
-            <td th:text="${orderedDish.order.id}"></td>
-            <td th:text="${orderedDish.dish.name}"></td>
-            <td th:text="${orderedDish.status}"></td>
-            <td>
-                <form th:action="@{'/update-dish-status/' + ${orderedDish.id}}" method="post">
-                    <select name="status">
-                        <option value="Готовится">Готовится</option>
-                        <option value="Готово">Готово</option>
-                        <option value="Сервировано">Сервировано</option>
-                    </select>
-                    <button type="submit">Обновить</button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+
+<div class="main-content">
+    <div id="content">
+        <table>
+            <thead>
+            <tr>
+                <th>Заказ</th>
+                <th>Блюдо</th>
+                <th>Статус</th>
+                <th>Изменить статус</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="orderedDish : ${orderedDishes}">
+                <td th:text="${orderedDish.order.id}"></td>
+                <td th:text="${orderedDish.dish.name}"></td>
+                <td th:text="${orderedDish.status}"></td>
+                <td>
+                    <form th:action="@{'/update-dish-status/' + ${orderedDish.id}}" method="post">
+                        <select name="status">
+                            <option value="Готовится">Готовится</option>
+                            <option value="Готово">Готово</option>
+                            <option value="Сервировано">Сервировано</option>
+                        </select>
+                        <button type="submit">Обновить</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
+
 </body>
 </html>

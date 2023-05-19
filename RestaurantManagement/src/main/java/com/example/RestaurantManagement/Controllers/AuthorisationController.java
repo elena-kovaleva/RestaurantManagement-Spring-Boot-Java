@@ -37,10 +37,10 @@ public class AuthorisationController {
                         return "redirect:/staff";
                     }
                     case "МЕНЕДЖЕР" -> {
-                        return "redirect:/managerJob";
+                        return "redirect:/view-schedule";
                     }
                     case "ПОВАР" -> {
-                        return "redirect:/kitchenJob";
+                        return "redirect:/kitchen";
                     }
                     default -> {
                         model.addAttribute("errorMessage", "Неверная роль");

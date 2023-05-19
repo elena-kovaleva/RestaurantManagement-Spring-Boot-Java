@@ -25,11 +25,13 @@ public class OrderController {
         return "manage-orders";
     }
 
-    @PostMapping("/update-dish-status/{id}")
-    public String updateDishStatus(@PathVariable int id, String status) {
-        OrderedDish orderedDish = orderedDishRepository.findById(id).orElseThrow();
-        orderedDish.setStatus(status);
-        orderedDishRepository.save(orderedDish);
-        return "redirect:/manage-orders";
+    @GetMapping("/create-order")
+    public String createOrder() {
+        return "createOrder";
+    }
+
+    @GetMapping("/view-orders")
+    public String viewOrders() {
+        return "viewOrders";
     }
 }
