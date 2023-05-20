@@ -2,93 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Новый заказ</title>
-    <link rel="stylesheet" th:href="@{/css/manager-styles.css}"/>
-<!--    <style>-->
-<!--        .container {-->
-<!--            display: flex;-->
-<!--            justify-content: space-between;-->
-<!--        }-->
-
-<!--        .form-column, .order-column {-->
-<!--            width: 45%;-->
-<!--            padding: 20px;-->
-<!--            box-sizing: border-box;-->
-<!--        }-->
-
-<!--        .order-column {-->
-<!--            border: 1px solid #000;-->
-<!--            height: fit-content;-->
-<!--            padding: 2em;-->
-<!--            border-radius: 8px;-->
-<!--            background: #f5f5f5;-->
-<!--        }-->
-
-<!--        p, h2 {-->
-<!--            margin-bottom: 1em;-->
-<!--        }-->
-
-<!--        .total-cost {-->
-<!--            border-top: 1px solid #000;-->
-<!--            margin-top: 1em;-->
-<!--            padding-top: 1em;-->
-<!--        }-->
-
-<!--        .dish-row {-->
-<!--            display: flex;-->
-<!--            justify-content: space-between;-->
-<!--            align-items: center;-->
-<!--        }-->
-
-<!--        .dish-controls {-->
-<!--            display: flex;-->
-<!--            justify-content: space-between;-->
-<!--            width: 70px;-->
-<!--            font-size: 20px;-->
-<!--        }-->
-
-<!--        .dish-item {-->
-<!--            display: flex;-->
-<!--            align-items: center;-->
-<!--            justify-content: space-between;-->
-<!--            border-bottom: 1px solid #ddd;-->
-<!--            padding: 1em 0;-->
-<!--        }-->
-
-<!--        .dish-item:last-child {-->
-<!--            border-bottom: none;-->
-<!--        }-->
-
-<!--        .dish-name-and-price, .dish-controls {-->
-<!--            display: flex;-->
-<!--            align-items: center;-->
-<!--        }-->
-
-<!--        .dish-controls button {-->
-<!--            margin-left: 15px;-->
-<!--            background: #007BFF;-->
-<!--            color: #fff;-->
-<!--            border: none;-->
-<!--            border-radius: 5px;-->
-<!--            padding: 10px 15px;-->
-<!--        }-->
-
-<!--        .dish-controls button:hover {-->
-<!--            background: #0056b3;-->
-<!--        }-->
-
-<!--        .dish-controls button:active {-->
-<!--            background: #003580;-->
-<!--        }-->
-
-<!--        #totalCost {-->
-<!--            font-size: 18px;-->
-<!--            font-weight: bold;-->
-<!--        }-->
-
-<!--    </style>-->
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
 </head>
 <body>
 <div class="main-content">
+    <h1>Новый заказ</h1>
 
     <div class="container">
         <div class="sidebar">
@@ -101,26 +19,25 @@
 
         <div class="form-column">
             <form th:action="@{/create-order}" method="post" id="orderForm">
-                <h1>Создать заказ</h1>
                 <h2>Выбор блюда</h2>
                 <p>
                     <select id="typeSelect" onchange="filterDishesByType()">
-                        <option value="" disabled selected>Select a type</option>
+                        <option value="" disabled>Select a type</option>
                         <option th:each="type : ${types}" th:value="${type.id}" th:text="${type.name}"/>
                     </select>
                 </p>
                 <p>
                     <select id="dishSelect" name="dish_id" required>
-                        <option value="" disabled selected>Select a dish</option>
-                        <option th:each="dish : ${dishes}" th:value="${dish.id}" th:text="${dish.name}"
+                        <option value="" disabled>Select a dish</option>
+                        <option th:each="dish : ${dishes}" th:value="${dish.id}"
+                                th:text="${dish.name} + ' - ' + ${dish.cost}"
                                 th:data-type-id="${dish.type.id}" th:data-cost="${dish.cost}"/>
                     </select>
-                    <button type="button" onclick="addDish()">Добавить блюдо</button>
-                </p>
+                    <br>
                 <p>
-                    <button type="button" onclick="removeDish()">Удалить блюдо</button>
+                    <button type="button" onclick="addDish()" id="addDishButton">Добавить блюдо</button>
                 </p>
-
+                </p>
             </form>
         </div>
 
@@ -128,8 +45,8 @@
             <h2>Текущий заказ</h2>
             <p>
                 Столик:
-                <select name="table_id" required>
-                    <option value="" disabled selected>Select a table</option>
+                <select name="table_id" required id="tableSelect">
+                    <option value="" disabled>Select a table</option>
                     <option th:each="table : ${tables}" th:value="${table.id}" th:text="${table.id}"/>
                 </select>
             </p>
@@ -146,68 +63,88 @@
     </div>
 </div>
 <script>
+    document.getElementById('addDishButton').disabled = true;
+
     let selectedDishes = [];
+    let selectedDishCosts = {};
     let selectedDishCounts = {};
     let totalCost = 0;
+
+    function filterDishesByType() {
+        let selectedType = document.getElementById('typeSelect').value;
+        let dishes = document.getElementById('dishSelect').options;
+        for (let i = 0; i < dishes.length; i++) {
+            let dish = dishes[i];
+            dish.style.display = dish.getAttribute('data-type-id') === selectedType ? '' : 'none';
+        }
+        document.getElementById('dishSelect').selectedIndex = -1;
+        document.getElementById('addDishButton').disabled = true;
+    }
 
     function addDish() {
         let dishSelect = document.getElementById("dishSelect");
         let dishId = dishSelect.value;
-        let dishName = dishSelect.options[dishSelect.selectedIndex].text;
-        let dishCost = parseFloat(dishSelect.options[dishSelect.selectedIndex].getAttribute('data-cost'));
+        let dishDetails = dishSelect.options[dishSelect.selectedIndex].text.split(" - ");
+        let dishName = dishDetails[0];
+        let dishCost = parseFloat(dishDetails[1]);
 
         selectedDishCounts[dishId] = (selectedDishCounts[dishId] || 0) + 1;
+        selectedDishCosts[dishId] = dishCost;
         let selectedDishesDiv = document.getElementById("selectedDishes");
         let dishDiv = document.getElementById("dish" + dishId);
+        let dishTextDiv;
 
         if (dishDiv) {
-            dishDiv.textContent = dishName + " - " + dishCost + " (x" + selectedDishCounts[dishId] + ")";
-            dishDiv.appendChild(createDishControls(dishId));
+            dishTextDiv = dishDiv.querySelector(".dish-text");
+            dishTextDiv.textContent = dishName + " - " + dishCost + " (x" + selectedDishCounts[dishId] + ")";
         } else {
             selectedDishes.push(dishId);
             dishDiv = document.createElement("div");
             dishDiv.setAttribute("id", "dish" + dishId);
-            dishDiv.textContent = dishName + " - " + dishCost + " (x" + selectedDishCounts[dishId] + ")";
-            dishDiv.appendChild(createDishControls(dishId));
+
+            dishTextDiv = document.createElement("div");
+            dishTextDiv.classList.add("dish-text");
+            dishTextDiv.textContent = dishName + " - " + dishCost + " (x" + selectedDishCounts[dishId] + ")";
+            dishDiv.appendChild(dishTextDiv);
+
             let hiddenInput = document.createElement("input");
             hiddenInput.setAttribute("type", "hidden");
             hiddenInput.setAttribute("name", "dish_ids");
             hiddenInput.setAttribute("value", dishId);
             dishDiv.appendChild(hiddenInput);
+
+            let addBtn = document.createElement("button");
+            addBtn.textContent = "+";
+            addBtn.onclick = function () {
+                changeDishCount(dishId, 1);
+            };
+
+            let removeBtn = document.createElement("button");
+            removeBtn.textContent = "-";
+            removeBtn.onclick = function () {
+                changeDishCount(dishId, -1);
+            };
+
+            dishDiv.appendChild(addBtn);
+            dishDiv.appendChild(removeBtn);
+
             selectedDishesDiv.appendChild(dishDiv);
         }
         totalCost += dishCost;
         document.getElementById("totalCost").textContent = "Совокупная стоимость: " + totalCost;
     }
 
-    function createDishControls(dishId) {
-        let controlsDiv = document.createElement("div");
-        controlsDiv.setAttribute("class", "dish-controls");
-        let addButton = document.createElement("button");
-        addButton.textContent = "+";
-        addButton.onclick = function () {
-            changeDishCount(dishId, 1);
-        };
-        let removeButton = document.createElement("button");
-        removeButton.textContent = "-";
-        removeButton.onclick = function () {
-            changeDishCount(dishId, -1);
-        };
-        controlsDiv.appendChild(addButton);
-        controlsDiv.appendChild(removeButton);
-        return controlsDiv;
-    }
+    document.getElementById('dishSelect').addEventListener('change', function () {
+        document.getElementById('addDishButton').disabled = this.value === '';
+    });
 
     function changeDishCount(dishId, countChange) {
-        let dishSelect = document.getElementById("dishSelect");
-        let dishCost = parseFloat(dishSelect.options[dishSelect.selectedIndex].getAttribute('data-cost'));
         selectedDishCounts[dishId] += countChange;
-        totalCost += dishCost * countChange;
+        totalCost += selectedDishCosts[dishId] * countChange;
         let dishDiv = document.getElementById("dish" + dishId);
-        let dishName = dishSelect.options[dishSelect.selectedIndex].text;
-        dishDiv.textContent = dishName + " - " + dishCost + " (x" + selectedDishCounts[dishId] + ")";
-        dishDiv.appendChild(createDishControls(dishId));
-        document.getElementById("totalCost").textContent = "Совокупная стоимость: " + totalCost;
+        let dishTextDiv = dishDiv.querySelector(".dish-text");
+        let dishName = dishTextDiv.textContent.split(" - ")[0];
+        dishTextDiv.textContent = dishName + " - " + selectedDishCosts[dishId] + " (x" + selectedDishCounts[dishId] + ")";
 
         if (selectedDishCounts[dishId] === 0) {
             dishDiv.remove();
@@ -217,18 +154,12 @@
                 selectedDishes.splice(index, 1);
             }
         }
-    }
-
-    function removeDish() {
-        let dishSelect = document.getElementById("dishSelect");
-        let dishId = dishSelect.value;
-        if (dishId in selectedDishCounts) {
-            changeDishCount(dishId, -1);
-        }
+        document.getElementById("totalCost").textContent = "Совокупная стоимость: " + totalCost;
     }
 
     function resetOrder() {
         selectedDishes = [];
+        selectedDishCosts = {};
         selectedDishCounts = {};
         totalCost = 0;
         document.getElementById("totalCost").textContent = "Совокупная стоимость: " + totalCost;
@@ -237,8 +168,13 @@
             selectedDishesDiv.removeChild(selectedDishesDiv.firstChild);
         }
     }
+
+    window.onload = function () {
+        document.getElementById('typeSelect').value = "";
+        document.getElementById('dishSelect').value = "";
+        document.getElementById('table_id').value = "1";
+        filterDishesByType();
+    };
 </script>
-
-
 </body>
 </html>
