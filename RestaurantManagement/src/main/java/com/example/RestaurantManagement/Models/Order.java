@@ -3,6 +3,7 @@ package com.example.RestaurantManagement.Models;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -30,6 +31,17 @@ public class Order {
 
     @Column(name = "status")
     private String status;
+
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
+    private List<OrderedDish> orderedDishes;
+
+    public List<OrderedDish> getOrderedDishes() {
+        return orderedDishes;
+    }
+
+    public void setOrderedDishes(List<OrderedDish> orderedDishes) {
+        this.orderedDishes = orderedDishes;
+    }
 
     public int getId() {
         return id;
