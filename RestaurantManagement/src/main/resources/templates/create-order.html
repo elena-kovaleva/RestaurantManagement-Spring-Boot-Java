@@ -1,15 +1,161 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <title>Новый заказ</title>
+    <link rel="stylesheet" th:href="@{/css/manager-styles.css}"/>
 </head>
 <body>
-<div id="sidebar">
+<div class="main-content">
+
+    <div class="container">
+        <div class="sidebar">
+            <ul>
+                <li><a href="/create-order">Новый заказ</a></li>
+                <li><a href="/view-orders.html">Просмотр заказов</a></li>
+                <li><a href="/login">Выход</a></li>
+            </ul>
+        </div>
+
+        <div class="form-column">
+            <form th:action="@{/create-order}" method="post" id="orderForm">
+                <h1>Создать заказ</h1>
+                <h2>Выбор блюда</h2>
+                <p>
+                    <select id="typeSelect" onchange="filterDishesByType()">
+                        <option value="" disabled selected>Select a type</option>
+                        <option th:each="type : ${types}" th:value="${type.id}" th:text="${type.name}"/>
+                    </select>
+                </p>
+                <p>
+                    <select id="dishSelect" name="dish_id" required>
+                        <option value="" disabled selected>Select a dish</option>
+                        <option th:each="dish : ${dishes}" th:value="${dish.id}" th:text="${dish.name}"
+                                th:data-type-id="${dish.type.id}" th:data-cost="${dish.cost}"/>
+                    </select>
+                    <button type="button" onclick="addDish()">Добавить блюдо</button>
+                </p>
+                <p>
+                    <button type="button" onclick="removeDish()">Удалить блюдо</button>
+                </p>
+
+            </form>
+        </div>
+
+        <div class="order-column">
+            <h2>Текущий заказ</h2>
+            <p>
+                Столик:
+                <select name="table_id" required>
+                    <option value="" disabled selected>Select a table</option>
+                    <option th:each="table : ${tables}" th:value="${table.id}" th:text="${table.id}"/>
+                </select>
+            </p>
+            <h2>Выбранные блюда:</h2>
+            <div id="selectedDishes"></div>
+            <div class="total-cost">
+                <p id="totalCost">Совокупная стоимость: 0</p>
+                <button onclick="submitOrder()">Создать заказ</button>
+                <p>
+                    <button type="reset" onclick="resetOrder()">Сбросить заказ</button>
+                </p>
+            </div>
+        </div>
+    </div>
 </div>
-<div id="content">
-    <h2>Создать новый заказ</h2>
-    <form>
-    </form>
-    <h2>Выберите категорию блюд</h2>
-</div>
+<script>
+    let selectedDishes = [];
+    let selectedDishCounts = {};
+    let totalCost = 0;
+
+    function addDish() {
+        let dishSelect = document.getElementById("dishSelect");
+        let dishId = dishSelect.value;
+        let dishName = dishSelect.options[dishSelect.selectedIndex].text;
+        let dishCost = parseFloat(dishSelect.options[dishSelect.selectedIndex].getAttribute('data-cost'));
+
+        selectedDishCounts[dishId] = (selectedDishCounts[dishId] || 0) + 1;
+        let selectedDishesDiv = document.getElementById("selectedDishes");
+        let dishDiv = document.getElementById("dish" + dishId);
+
+        if (dishDiv) {
+            dishDiv.textContent = dishName + " - " + dishCost + " (x" + selectedDishCounts[dishId] + ")";
+            dishDiv.appendChild(createDishControls(dishId));
+        } else {
+            selectedDishes.push(dishId);
+            dishDiv = document.createElement("div");
+            dishDiv.setAttribute("id", "dish" + dishId);
+            dishDiv.textContent = dishName + " - " + dishCost + " (x" + selectedDishCounts[dishId] + ")";
+            dishDiv.appendChild(createDishControls(dishId));
+            let hiddenInput = document.createElement("input");
+            hiddenInput.setAttribute("type", "hidden");
+            hiddenInput.setAttribute("name", "dish_ids");
+            hiddenInput.setAttribute("value", dishId);
+            dishDiv.appendChild(hiddenInput);
+            selectedDishesDiv.appendChild(dishDiv);
+        }
+        totalCost += dishCost;
+        document.getElementById("totalCost").textContent = "Совокупная стоимость: " + totalCost;
+    }
+
+    function createDishControls(dishId) {
+        let controlsDiv = document.createElement("div");
+        controlsDiv.setAttribute("class", "dish-controls");
+        let addButton = document.createElement("button");
+        addButton.textContent = "+";
+        addButton.onclick = function () {
+            changeDishCount(dishId, 1);
+        };
+        let removeButton = document.createElement("button");
+        removeButton.textContent = "-";
+        removeButton.onclick = function () {
+            changeDishCount(dishId, -1);
+        };
+        controlsDiv.appendChild(addButton);
+        controlsDiv.appendChild(removeButton);
+        return controlsDiv;
+    }
+
+    function changeDishCount(dishId, countChange) {
+        let dishSelect = document.getElementById("dishSelect");
+        let dishCost = parseFloat(dishSelect.options[dishSelect.selectedIndex].getAttribute('data-cost'));
+        selectedDishCounts[dishId] += countChange;
+        totalCost += dishCost * countChange;
+        let dishDiv = document.getElementById("dish" + dishId);
+        let dishName = dishSelect.options[dishSelect.selectedIndex].text;
+        dishDiv.textContent = dishName + " - " + dishCost + " (x" + selectedDishCounts[dishId] + ")";
+        dishDiv.appendChild(createDishControls(dishId));
+        document.getElementById("totalCost").textContent = "Совокупная стоимость: " + totalCost;
+
+        if (selectedDishCounts[dishId] === 0) {
+            dishDiv.remove();
+            delete selectedDishCounts[dishId];
+            const index = selectedDishes.indexOf(dishId);
+            if (index > -1) {
+                selectedDishes.splice(index, 1);
+            }
+        }
+    }
+
+    function removeDish() {
+        let dishSelect = document.getElementById("dishSelect");
+        let dishId = dishSelect.value;
+        if (dishId in selectedDishCounts) {
+            changeDishCount(dishId, -1);
+        }
+    }
+
+    function resetOrder() {
+        selectedDishes = [];
+        selectedDishCounts = {};
+        totalCost = 0;
+        document.getElementById("totalCost").textContent = "Совокупная стоимость: " + totalCost;
+        let selectedDishesDiv = document.getElementById("selectedDishes");
+        while (selectedDishesDiv.firstChild) {
+            selectedDishesDiv.removeChild(selectedDishesDiv.firstChild);
+        }
+    }
+</script>
+
+
 </body>
 </html>

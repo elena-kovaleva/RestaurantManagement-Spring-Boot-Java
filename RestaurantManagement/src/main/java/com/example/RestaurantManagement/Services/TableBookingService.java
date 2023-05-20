@@ -3,7 +3,7 @@ package com.example.RestaurantManagement.Services;
 import com.example.RestaurantManagement.Models.TableBooking;
 import com.example.RestaurantManagement.Models.Tables;
 import com.example.RestaurantManagement.Repositories.TableBookingRepository;
-import com.example.RestaurantManagement.Repositories.TableRepository;
+import com.example.RestaurantManagement.Repositories.TablesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,20 +15,20 @@ import java.util.List;
 public class TableBookingService {
 
     private final TableBookingRepository tableBookingRepository;
-    private final TableRepository tableRepository;
+    private final TablesRepository tablesRepository;
 
     @Autowired
-    public TableBookingService(TableBookingRepository tableBookingRepository, TableRepository tableRepository) {
+    public TableBookingService(TableBookingRepository tableBookingRepository, TablesRepository tablesRepository) {
         this.tableBookingRepository = tableBookingRepository;
-        this.tableRepository = tableRepository;
+        this.tablesRepository = tablesRepository;
     }
 
     public List<Tables> getAllTables() {
-        return tableRepository.findAll();
+        return tablesRepository.findAll();
     }
 
     public String bookTable(int tableId, Date date, Time time, String info) {
-        Tables table = tableRepository.findById(tableId)
+        Tables table = tablesRepository.findById(tableId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid table Id:" + tableId));
 
         List<TableBooking> existingBookings = tableBookingRepository.findByTableAndDateAndTime(table, date, time);
