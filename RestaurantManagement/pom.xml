@@ -13,9 +13,11 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>RestaurantManagement</name>
 	<description>Demo project for Spring Boot</description>
-	<properties>
-		<java.version>20</java.version>
-	</properties>
+    <properties>
+        <java.version>20</java.version>
+        <maven.compiler.source>20</maven.compiler.source>
+        <maven.compiler.target>20</maven.compiler.target>
+    </properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -57,6 +59,7 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>${project.parent.version}</version>
 			</plugin>
 		</plugins>
 	</build>
